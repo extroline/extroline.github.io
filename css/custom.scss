@@ -1,8 +1,23 @@
-
 // Step 1: Import functions first to make them available
-@import "../node_modules/bootstrap/scss/functions";
+@import "~bootstrap/scss/functions";
+
 
 // Step 2: Override variables
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+$font-family-base: 'Montserrat', sans-serif;
+
+$charcoal: #424B54;
+$cadet-gray: #93A8AC;
+$white: #FFFFFF;
+$orchid-pink: #E2B4BD;
+$rose-taupe: #9B6A6C; 
+
+$primary: $charcoal;
+$success: $cadet-gray;
+$danger: $white;
+$warning: $orchid-pink;
+$info: $rose-taupe;
 
 // Step 3: Import full Bootstrap to apply customizations
-@import "../node_modules/bootstrap/scss/bootstrap";
+@import "~bootstrap/scss/bootstrap";
