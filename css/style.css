@@ -25,7 +25,7 @@ h1 {
 
 /* Profile Picture Styles */
 #profilepic {
-    border-radius: 20px;
+    border-radius: 10px;
     width: 300px;
     height: 240px;
     margin: 20px auto;
@@ -83,3 +83,4 @@ footer {
     font-size: 0.9em;
     color: #666;
 }
+
