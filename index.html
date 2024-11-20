@@ -1,77 +1,75 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en" class="h-100">
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/custom.css">
     <script src="js/bootstrap.bundle.min.js"></script>
     <title>Dakota's Portfolio Page</title>
+    <link href="https://getbootstrap.com/docs/5.1/examples/cover/cover.css" rel="stylesheet">
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
 
-</head>
-<body>
-    
-    <div class="card m-2" style="width: 20rem;"> 
-        <img src="images/profilepic.jpg" class="card-img-top" alt="My profile picture">
-        <div class="card-body">
-          <h5 class="card-title">About Me</h5>
-          <p class="card-text">I am a new college student pursuing a B.S. in Computer Science. I started coding five years ago using Scratch and have since taken courses at my high school’s technical center. Now in my first term of college, I'm eager to enhance my technical skills while maintaining strong soft skills. Fun fact: I was a state officer for Future Natural Resource Leaders, allowing me to teach forestry across the state.</p>
-        </div>
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+  </head>
+  <body class="d-flex h-100 text-center text-white bg-dark">
+
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+  <header class="mb-auto">
+    <div>
+      <h3 class="float-md-start mb-0">Dakota Portfolio's</h3>
+      <nav class="nav nav-masthead justify-content-center float-md-end">
+       <!--   <a class="nav-link active" aria-current="page" href="#">Home</a>
+       <a class="nav-link" href="#">Features</a>
+        <a class="nav-link" href="#">Contact</a>--->
+      </nav>
     </div>
-    <header>
-        <img id="profilepic" src="images/profilepic.jpg" alt="Profile Picture"/>
-        <h1>Dakota's Portfolio Page</h1>
-    </header>
+  </header>
 
-    <section>
-        <h2>About Me</h2>
-           <!----> <p>I am a new college student pursuing a B.S. in Computer Science. I started coding five years ago using Scratch and have since taken courses at my high school’s technical center. Now in my first term of college, I'm eager to enhance my technical skills while maintaining strong soft skills. Fun fact: I was a state officer for Future Natural Resource Leaders, allowing me to teach forestry across the state.</p>
-    </section>
+  <main class="px-3">
+    <h1>Dakota Rentz Portfolio</h1>
+    <p class="lead">Thanks for stopping by. Below you can find links to my Linkedin, As well my repositories.</p>
+    <p class="lead">
+    <!--    <a href="#" class="btn btn-lg btn-secondary fw-bold border-white bg-white">Learn more</a> --->
+    </p>
+  </main>
+  <footer class="mt-auto text-white-50">
+    <p<section>
+      <h2>Links</h2>
+      <div class="social-icons">
+          <a href="https://github.com/extroline"><img src="images/github.png" width="50" alt="GitHub"/></a>
+          <a href="https://www.linkedin.com/in/dakota-rentz-005727330/"><img src="images/linkedin.png" width="50" alt="LinkedIn"/></a>
+      </div>
+    </section>.</p>
+  </footer>
+</div>
+<div class="card m-2" style="width: 15rem;"> 
+  <img src="images/profilepic.jpg" class="card-img-top" alt="My profile picture">
+  <div class="card-body">
+    <h5 class="card-title">About Me</h5>
+    <p class="card-text">I am a new college student pursuing a B.S. in Computer Science. I started coding five years ago using Scratch and have since taken courses at my high school’s technical center. Now in my first term of college, I'm eager to enhance my technical skills while maintaining strong soft skills. Fun fact: I was a state officer for Future Natural Resource Leaders, allowing me to teach forestry across the state.</p>
+  </div>
+  </body>
+  <section>
+    <h2>Contact Me</h2>
+    <p>Email: <a href="mailto:rentzd@oregonstate.edu">rentzd@oregonstate.edu</a></p>
+</section>
 
-    <section>
-        <h2>Experience</h2>
-        <p>I have created a Yahtzee game and several Discord bots.</p>
-    </section>
-
-    <section>
-        <h2>Skills</h2>
-        <p>Python, Java</p>
-    </section>
-
-    <section>
-        <h2>My Repositories</h2>
-        <p><a href="https://github.com/extroline/extroline.Github.io"><img src="images/github.png" width="50" alt="GitHub"/></a></p>
-    </section>
-
-    <section>
-        <h2>Education</h2>
-        <p>B.S. in Computer Science <img src="images/osu.png" width="50" alt="OSU Logo"/></p>
-        <p>In Progress</p>
-    </section>
-
-    <section>
-        <h2>Awards</h2>
-        <p>Honors Diploma</p>
-    </section>
-
-    <section>
-        <h2>Social Media</h2>
-        <div class="social-icons">
-            <a href="https://github.com/extroline"><img src="images/github.png" width="50" alt="GitHub"/></a>
-            <a href="https://www.linkedin.com/in/dakota-rentz-005727330/"><img src="images/linkedin.png" width="50" alt="LinkedIn"/></a>
-        </div>
-    </section>
-
-    <section>
-        <h2>Contact Me</h2>
-        <p>Email: <a href="mailto:rentzd@oregonstate.edu">rentzd@oregonstate.edu</a></p>
-    </section>
-
-    <footer>
-        <p><a target="_blank" href="https://icons8.com/icon/9243/cat">Cat</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></p>
-    </footer>
-    <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
+<footer>
+    <p><a target="_blank" href="https://icons8.com/icon/9243/cat">Cat</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></p>
+</footer>
+<script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </html>
