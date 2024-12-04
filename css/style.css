@@ -84,3 +84,9 @@ footer {
     color: #666;
 }
 
+.carousel-item img {
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+  }
+  
