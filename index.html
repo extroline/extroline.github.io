@@ -1,88 +1,164 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/custom.css">
-    <title>Dakota's Portfolio Page</title>
-    <link href="https://getbootstrap.com/docs/5.1/examples/cover/cover.css" rel="stylesheet">
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stacked: 3D Tic-Tac-Toe</title>
+<style>
+:root{--bg:#10131c;--panel:#1a1f2d;--fg:#eef0f6;--x:#ff6b6b;--o:#5ad1e8;--line:#3b4560;--win:#ffd166}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(ellipse at 50% 35%,#1d2336,var(--bg) 70%);color:var(--fg);font:15px/1.4 "Trebuchet MS",system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--panel)}
+h1{font-size:18px;margin:0;letter-spacing:.02em}
+#status{font-size:17px;font-weight:700}
+.x{color:var(--x)}.o{color:var(--o)}
+#score{opacity:.85}
+#stage{flex:1;position:relative;perspective:1400px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#stage:active{cursor:grabbing}
+#world{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.layer{position:absolute;transform-style:preserve-3d;display:grid;border:2px solid var(--line);background:rgba(120,140,200,.07)}
+.layer::before{content:attr(data-l);position:absolute;left:-4px;top:-26px;font-size:12px;color:#9aa4c0}
+.cell{border:1px solid var(--line);display:grid;place-items:center;font-weight:800;line-height:1;transition:background .15s}
+.cell:hover{background:rgba(255,255,255,.14)}
+.cell.x,.cell.o{background:rgba(255,255,255,.05)}
+.cell.x{color:var(--x);text-shadow:0 0 12px var(--x)}
+.cell.o{color:var(--o);text-shadow:0 0 12px var(--o)}
+.cell.win{background:rgba(255,209,102,.4);box-shadow:inset 0 0 0 3px var(--win)}
+.over .cell{pointer-events:none}
+footer{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:center;padding:10px 16px;background:var(--panel)}
+button,select{font:inherit;color:var(--fg);background:#2a3250;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{background:#36406a}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--win);outline-offset:2px}
+label{display:flex;align-items:center;gap:6px}
+#hint{position:absolute;bottom:8px;width:100%;text-align:center;font-size:12px;opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>Stacked: 3D Tic-Tac-Toe</h1>
+  <div id="status" aria-live="polite"></div>
+  <div id="score"></div>
+</header>
+<div id="stage"><div id="world"></div><div id="hint">Drag to rotate. Scroll or use + / − to zoom. Click a square to play.</div></div>
+<footer>
+  <label>Board
+    <select id="size"><option value="3">3×3×3 (3 in a row)</option><option value="4" selected>4×4×4 (4 in a row)</option></select>
+  </label>
+  <label>Layer spacing <input id="gap" type="range" min="0.4" max="2.4" step="0.05" value="1.1"></label>
+  <button id="spin" aria-pressed="false">Auto-rotate</button>
+  <button id="zin" aria-label="Zoom in">+</button>
+  <button id="zout" aria-label="Zoom out">−</button>
+  <button id="view">Reset view</button>
+  <button id="reset">New game</button>
+</footer>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const world = $('#world'), stage = $('#stage');
+  let N = 4, board = [], turn = 'X', over = false, lines = [], cells = [];
+  let rx = -32, ry = 28, zoom = 1, gapK = 1.1, spin = false, dragged = false, down = null;
+  const score = { X: 0, O: 0, D: 0 };
+
+  const cellPx = () => Math.max(38, Math.min(84, Math.min(stage.clientWidth, stage.clientHeight) / (N * 1.5)));
+
+  function genLines() {
+    lines = [];
+    const dirs = [];
+    for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) {
+      if (!a && !b && !c) continue;
+      const first = a || b || c;       // keep one of each +/- pair
+      if (first > 0) dirs.push([a, b, c]);
+    }
+    for (let x = 0; x < N; x++) for (let y = 0; y < N; y++) for (let z = 0; z < N; z++)
+      for (const [a, b, c] of dirs) {
+        const ex = x + a * (N - 1), ey = y + b * (N - 1), ez = z + c * (N - 1);
+        if (ex < 0 || ex >= N || ey < 0 || ey >= N || ez < 0 || ez >= N) continue;
+        const l = [];
+        for (let k = 0; k < N; k++) l.push((y + b * k) * N * N + (z + c * k) * N + (x + a * k));
+        lines.push(l);
       }
+  }
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
+  function build() {
+    world.innerHTML = ''; cells = [];
+    board = Array(N * N * N).fill(null); turn = 'X'; over = false;
+    world.classList.remove('over');
+    genLines();
+    const c = cellPx(), S = c * N;
+    for (let y = 0; y < N; y++) {
+      const L = document.createElement('div');
+      L.className = 'layer'; L.dataset.l = 'Layer ' + (y + 1) + (y === 0 ? ' (bottom)' : y === N - 1 ? ' (top)' : '');
+      L.style.cssText = `width:${S}px;height:${S}px;left:${-S / 2}px;top:${-S / 2}px;grid-template:repeat(${N},1fr)/repeat(${N},1fr);font-size:${c * 0.6}px`;
+      L.dataset.y = y;
+      for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
+        const i = y * N * N + z * N + x, d = document.createElement('div');
+        d.className = 'cell';
+        d.addEventListener('click', () => play(i));
+        L.appendChild(d); cells[i] = d;
       }
-    </style>
-  </head>
-  <body class="d-flex text-center text-white bg-dark">
-    <div class="cover-container d-flex w-100 h-110 p-3 mx-auto flex-column">
-      <header class="mb-auto">
-        <div>
-          <h3 class="float-md-start mb-0">Dakota Portfolio's</h3>
-          <nav class="nav nav-masthead justify-content-center float-md-end"></nav>
-        </div>
-      </header>
+      world.appendChild(L);
+    }
+    layout(); status();
+  }
 
-      <main class="px-5">
-        <h1>Dakota Rentz Portfolio</h1>
-        <p class="lead">Thanks for stopping by. Below you can find links to my LinkedIn, as well as my repositories.</p>
-      </main>
+  function layout() {
+    const c = cellPx(), gap = c * gapK * 1.6;
+    [...world.children].forEach((L, y) => {
+      L.style.transform = `translateY(${-(y - (N - 1) / 2) * gap}px) rotateX(90deg)`;
+    });
+    world.style.transform = `scale(${zoom}) rotateX(${rx}deg) rotateY(${ry}deg)`;
+  }
 
-      <footer class="mt-auto text-white-50">
-        <p>© Dakota Rentz Portfolio</p>
-        <p><a target="_blank" href="https://icons8.com/icon/9243/cat">Cat</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></p>
-      </footer>
-    </div>
-    <div class="card m-2" style="width: 21rem;"> 
-      <div id="profileCarousel" class="carousel slide m-2" data-bs-ride="carousel" style="width: 18rem;">
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img src="images/profilepic.jpg" class="d-block w-75 img-fluid" alt="Profile Picture">
-          </div>
-          <div class="carousel-item">
-            <img src="images/christmascat.jpg" class="d-block w-75 img-fluid" alt="Christmas Cat">
-          </div>
-          <div class="carousel-item">
-            <img src="images/beachcat.jpg" class="d-block w-75 img-fluid" alt="Beach Cat">
-          </div>
-          <div class="carousel-item">
-            <img src="images/babycat.jpg" class="d-block w-75 img-fluid" alt="Baby Cat">
-          </div>
-          <div class="carousel-item">
-            <img src="images/hatcat.jpg" class="d-block w-75 img-fluid" alt="Hat Cat">
-          </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#profileCarousel" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#profileCarousel" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">About Me</h5>
-        <p class="card-text">I am a new college student pursuing a B.S. in Computer Science. I started coding five years ago using Scratch and have since taken courses at my high school’s technical center. Now in my first term of college, I'm eager to enhance my technical skills while maintaining strong soft skills. Fun fact: I was a state officer for Future Natural Resource Leaders, allowing me to teach forestry across the state.</p>
-        <hr>
-        <h5>Links</h5>
-        <div class="social-icons mb-3">
-          <a href="https://github.com/extroline"><img src="images/github.png" width="50" alt="GitHub"/></a>
-          <a href="https://www.linkedin.com/in/dakota-rentz-005727330/"><img src="images/linkedin.png" width="50" alt="LinkedIn"/></a>
-        </div>
-        <h5>Contact Me</h5>
-        <p>Email: <a href="mailto:rentzd@oregonstate.edu">rentzd@oregonstate.edu</a></p>
-      </div>
-    </div>    
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
-  </body>
+  function status(msg) {
+    $('#status').innerHTML = msg || `Turn: <span class="${turn.toLowerCase()}">${turn}</span>`;
+    $('#score').innerHTML = `<span class="x">X ${score.X}</span> · <span class="o">O ${score.O}</span> · Draws ${score.D}`;
+  }
+
+  function play(i) {
+    if (over || dragged || board[i]) return;
+    board[i] = turn;
+    cells[i].textContent = turn; cells[i].classList.add(turn.toLowerCase());
+    const win = lines.find(l => l.every(k => board[k] === turn));
+    if (win) {
+      over = true; score[turn]++; world.classList.add('over');
+      win.forEach(k => cells[k].classList.add('win'));
+      status(`<span class="${turn.toLowerCase()}">${turn}</span> wins!`);
+    } else if (board.every(Boolean)) {
+      over = true; score.D++; status('Draw');
+    } else {
+      turn = turn === 'X' ? 'O' : 'X'; status();
+    }
+  }
+
+  // Rotation by drag (pointer events cover mouse and touch)
+  stage.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY }; dragged = false; });
+  window.addEventListener('pointermove', e => {
+    if (!down) return;
+    const dx = e.clientX - down.x, dy = e.clientY - down.y;
+    if (!dragged && Math.hypot(dx, dy) < 6) return;
+    dragged = true;
+    ry += dx * 0.45; rx = Math.max(-90, Math.min(90, rx - dy * 0.45));
+    down = { x: e.clientX, y: e.clientY }; layout();
+  });
+  window.addEventListener('pointerup', () => { down = null; setTimeout(() => dragged = false, 0); });
+  stage.addEventListener('wheel', e => { e.preventDefault(); setZoom(zoom * (e.deltaY < 0 ? 1.08 : 0.92)); }, { passive: false });
+
+  function setZoom(z) { zoom = Math.max(0.4, Math.min(2.5, z)); layout(); }
+  $('#zin').onclick = () => setZoom(zoom * 1.15);
+  $('#zout').onclick = () => setZoom(zoom / 1.15);
+  $('#gap').oninput = e => { gapK = +e.target.value; layout(); };
+  $('#view').onclick = () => { rx = -32; ry = 28; zoom = 1; layout(); };
+  $('#reset').onclick = build;
+  $('#size').onchange = e => { N = +e.target.value; build(); };
+  $('#spin').onclick = e => { spin = !spin; e.target.setAttribute('aria-pressed', spin); e.target.style.background = spin ? '#4a5a96' : ''; };
+  window.addEventListener('resize', () => { if (!board.some(Boolean)) build(); });
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  (function tick() { if (spin && !down && !reduce) { ry += 0.35; layout(); } requestAnimationFrame(tick); })();
+
+  build();
+})();
+</script>
+</body>
 </html>
